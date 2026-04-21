@@ -1,3 +1,4 @@
+use std::fmt;
 use std::sync::{
     mpsc::{self, Sender},
     Arc, Mutex,
@@ -16,9 +17,24 @@ enum Message {
     Terminate,
 }
 
+#[derive(Debug)]
+pub struct PoolCreationError;
+
+impl fmt::Display for PoolCreationError {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "thread pool size must be greater than zero")
+    }
+}
+
 impl ThreadPool {
     pub fn new(size: usize) -> ThreadPool {
-        assert!(size > 0);
+        ThreadPool::build(size).expect("failed to build thread pool")
+    }
+
+    pub fn build(size: usize) -> Result<ThreadPool, PoolCreationError> {
+        if size == 0 {
+            return Err(PoolCreationError);
+        }
 
         let (sender, receiver) = mpsc::channel();
         let receiver = Arc::new(Mutex::new(receiver));
@@ -29,10 +45,10 @@ impl ThreadPool {
             workers.push(Worker::new(id, Arc::clone(&receiver)));
         }
 
-        ThreadPool {
+        Ok(ThreadPool {
             workers,
             sender: Some(sender),
-        }
+        })
     }
 
     pub fn execute<F>(&self, f: F)

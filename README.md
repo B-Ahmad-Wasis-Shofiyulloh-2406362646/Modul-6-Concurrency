@@ -38,3 +38,10 @@ Di Milestone 4, saya mensimulasikan request lambat dengan menambahkan endpoint `
 Di Milestone 5, saya mengubah server menjadi multithreaded dengan `ThreadPool` sehingga setiap koneksi tidak lagi diproses langsung di thread utama, tetapi dijalankan sebagai job oleh worker thread. Dengan pendekatan ini, request cepat tetap bisa diproses walaupun ada request lambat seperti `/sleep`, sehingga bottleneck pada single-threaded server berkurang signifikan. Saya juga memahami alur koordinasi antar thread melalui channel (`mpsc`) dan `Arc<Mutex<...>>`, termasuk kenapa thread pool lebih efisien dibanding membuat thread baru untuk setiap request. Perubahan ini membuat server lebih responsif dan lebih dekat ke pola implementasi web server di dunia nyata.
 
 </details>
+
+<details>
+<summary>Modul 6 - Bonus Reflection</summary>
+
+Pada bonus step, saya menambahkan fungsi `build` sebagai alternatif yang lebih aman dibanding `new` untuk membuat `ThreadPool`. Jika ukuran pool tidak valid (misalnya 0), `build` mengembalikan `Result::Err` sehingga error bisa ditangani dengan jelas, bukan langsung panic. Sementara itu, `new` tetap dipertahankan sebagai wrapper untuk perbandingan perilaku, sehingga terlihat bahwa `build` lebih fleksibel untuk aplikasi yang membutuhkan kontrol error handling lebih baik. Dengan perubahan ini, inisialisasi thread pool menjadi lebih robust dan cocok untuk pengembangan server yang lebih production-minded.
+
+</details>
