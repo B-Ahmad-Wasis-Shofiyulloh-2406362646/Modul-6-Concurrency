@@ -31,3 +31,10 @@ Di Milestone 3, saya mulai memvalidasi request dengan membaca request line dan m
 Di Milestone 4, saya mensimulasikan request lambat dengan menambahkan endpoint `/sleep` yang menunda respons selama 10 detik menggunakan `thread::sleep(Duration::from_secs(10))`. Dari percobaan ini terlihat jelas kelemahan server single-threaded: saat satu request lambat diproses, request lain ikut tertahan sampai proses sebelumnya selesai. Hal ini membantu saya memahami bottleneck pada desain satu thread dan kenapa milestone berikutnya perlu beralih ke server multithreaded dengan thread pool agar beberapa request dapat diproses lebih paralel.
 
 </details>
+
+<details>
+<summary>Modul 6 - Reflection 5</summary>
+
+Di Milestone 5, saya mengubah server menjadi multithreaded dengan `ThreadPool` sehingga setiap koneksi tidak lagi diproses langsung di thread utama, tetapi dijalankan sebagai job oleh worker thread. Dengan pendekatan ini, request cepat tetap bisa diproses walaupun ada request lambat seperti `/sleep`, sehingga bottleneck pada single-threaded server berkurang signifikan. Saya juga memahami alur koordinasi antar thread melalui channel (`mpsc`) dan `Arc<Mutex<...>>`, termasuk kenapa thread pool lebih efisien dibanding membuat thread baru untuk setiap request. Perubahan ini membuat server lebih responsif dan lebih dekat ke pola implementasi web server di dunia nyata.
+
+</details>
